@@ -1,51 +1,27 @@
-let mongoose = require('mongoose');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+let {mongoose} = require('./db/mongoose');
+let {Todo} = require('./models/todo');
+let {User} = require('./models/user');
 
-let Todo = mongoose.model('Todo', {
-	text: {
-		type: String,
-		required: true,
-		minlength: 1,
-		trim: true
-	},
-	completed: {
-		type: Boolean,
-		default: false
-	},
-	completedAt: {
-		type: Number,
-		default: null
-	}
-});
+let app = express();
+let port = process.env.PORT || 3000;
 
-let User = mongoose.model('User', {
-	email: {
-		type: String,
-		required: true,
-		minlength: 1,
-		trim: true
-	}
-});
+app.use(bodyParser.json());
 
-let newUser = new User({
-	email: 'sas@mail.com'
-})
-newUser.save().then((doc) => {
-	console.log('saved', doc)
-}, (e) => {
-	console.log('failed', e)
+app.post('/todos', (req, res) => {
+	let todo = new Todo({
+		text: req.body.text
+	})
+
+	todo.save().then((doc) => {
+		res.status(201).send(doc)
+	}, (e) => {
+		res.status(400).send(e)
+	})
 })
 
-// let addTodo = new Todo({
-// 	text: 'read',
-// 	completed: true,
-
-// })
-
-// addTodo.save().then((doc) => {
-// 	console.log('saved', doc)
-// }, (e) => {
-// 	console.log('failed to save')
-// })
+app.listen(port, () => {
+	console.log(`listening on port ${port}`);
+})
