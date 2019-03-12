@@ -16,7 +16,7 @@ app.post('/todos', (req, res) => {
 	})
 
 	todo.save().then((doc) => {
-		res.status(201).send(doc)
+		res.send(doc)
 	}, (e) => {
 		res.status(400).send(e)
 	})
@@ -25,3 +25,5 @@ app.post('/todos', (req, res) => {
 app.listen(port, () => {
 	console.log(`listening on port ${port}`);
 })
+
+module.exports = {app};
